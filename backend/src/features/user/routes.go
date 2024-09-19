@@ -1,39 +1,39 @@
-package routes
+package user
 
 import (
-	"backend/src/controllers"
+	"backend/src/router/types"
 	"net/http"
 )
 
-var userRoutes = []Route{
+var UserRoutes = []types.Route{
 	{
 		URI:                   "/users",
 		Method:                http.MethodPost,
-		Action:                controllers.Create,
+		Action:                Create,
 		RequireAuthentication: false,
 	},
 	{
 		URI:                   "/users",
 		Method:                http.MethodGet,
-		Action:                controllers.GetAll,
+		Action:                GetAll,
 		RequireAuthentication: false,
 	},
 	{
 		URI:                   "/users/{id}",
 		Method:                http.MethodGet,
-		Action:                controllers.Get,
+		Action:                Get,
 		RequireAuthentication: false,
 	},
 	{
 		URI:                   "/users/{id}",
 		Method:                http.MethodPut,
-		Action:                controllers.Update,
+		Action:                Update,
 		RequireAuthentication: false,
 	},
 	{
 		URI:                   "/users/{id}",
 		Method:                http.MethodDelete,
-		Action:                controllers.Delete,
+		Action:                Delete,
 		RequireAuthentication: false,
 	},
 }

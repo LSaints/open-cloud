@@ -1,7 +1,6 @@
-package repositories
+package user
 
 import (
-	"backend/src/models"
 	"database/sql"
 	"fmt"
 )
@@ -14,7 +13,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (repository UserRepository) Create(user models.User) (uint64, error) {
+func (repository UserRepository) Create(user User) (uint64, error) {
 	query := `
 		INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id
 	`
@@ -27,7 +26,7 @@ func (repository UserRepository) Create(user models.User) (uint64, error) {
 	return userID, nil
 }
 
-func (repository UserRepository) GetAll(param string) ([]models.User, error) {
+func (repository UserRepository) GetAll(param string) ([]User, error) {
 	param = fmt.Sprintf("%%%s%%", param)
 
 	result, err := repository.db.Query(
@@ -39,10 +38,10 @@ func (repository UserRepository) GetAll(param string) ([]models.User, error) {
 	}
 	defer result.Close()
 
-	var users []models.User
+	var users []User
 
 	for result.Next() {
-		var user models.User
+		var user User
 
 		if err = result.Scan(
 			&user.ID,
@@ -59,17 +58,17 @@ func (repository UserRepository) GetAll(param string) ([]models.User, error) {
 	return users, nil
 }
 
-func (repository UserRepository) GetByID(ID uint64) (models.User, error) {
+func (repository UserRepository) GetByID(ID uint64) (User, error) {
 	result, err := repository.db.Query(
 		"SELECT id, name, email, created_at FROM users WHERE id = $1",
 		ID,
 	)
 	if err != nil {
-		return models.User{}, err
+		return User{}, err
 	}
 	defer result.Close()
 
-	var user models.User
+	var user User
 	if result.Next() {
 		if err = result.Scan(
 			&user.ID,
@@ -77,13 +76,13 @@ func (repository UserRepository) GetByID(ID uint64) (models.User, error) {
 			&user.Email,
 			&user.CreatedAt,
 		); err != nil {
-			return models.User{}, err
+			return User{}, err
 		}
 	}
 	return user, nil
 }
 
-func (repository UserRepository) Update(ID uint64, user models.User) error {
+func (repository UserRepository) Update(ID uint64, user User) error {
 	statement, err := repository.db.Prepare(
 		"UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4",
 	)

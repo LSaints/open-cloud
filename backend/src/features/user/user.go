@@ -1,4 +1,4 @@
-package models
+package user
 
 import (
 	"errors"
@@ -30,7 +30,7 @@ func (user *User) validate(isRegister bool) error {
 	if user.Email == "" {
 		return errors.New("email field cannot be empty")
 	}
-	if isRegister == true && user.Password == "" {
+	if isRegister && user.Password == "" {
 		return errors.New("password field cannot be empty")
 	}
 	return nil
