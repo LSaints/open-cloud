@@ -2,6 +2,7 @@ package login
 
 import (
 	"backend/internal/core/user"
+	auth "backend/pkg/Auth"
 	"backend/pkg/database"
 	"backend/pkg/http/response"
 	"backend/pkg/security"
@@ -39,5 +40,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Login with sucessful"))
+	token, _ := auth.GenerateToken(userInDatabase.ID)
+	w.Write([]byte("token: " + token))
 }
