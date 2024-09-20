@@ -13,6 +13,7 @@ var (
 	ConnectionString = ""
 	Host             = ""
 	Port             = 0
+	SecretKey        = []byte("")
 )
 
 func Load() {
@@ -36,4 +37,5 @@ func Load() {
 		os.Getenv("DB_SSLMODE"),
 	)
 	Host = os.Getenv("API_HOST")
+	SecretKey = []byte(os.Getenv("JWT_SECRET"))
 }
