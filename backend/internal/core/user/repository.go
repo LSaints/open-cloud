@@ -82,6 +82,27 @@ func (repository UserRepository) GetByID(ID uint64) (User, error) {
 	return user, nil
 }
 
+func (repository UserRepository) GetByEmail(email string) (User, error) {
+	result, err := repository.db.Query(
+		"SELECT id, password FROM users WHERE email = $1",
+		email,
+	)
+	if err != nil {
+		return User{}, err
+	}
+	defer result.Close()
+
+	var user User
+
+	if result.Next() {
+		if err := result.Scan(&user.ID, &user.Password); err != nil {
+			return User{}, err
+		}
+	}
+
+	return user, nil
+}
+
 func (repository UserRepository) Update(ID uint64, user User) error {
 	statement, err := repository.db.Prepare(
 		"UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4",
