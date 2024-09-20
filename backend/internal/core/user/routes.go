@@ -1,7 +1,7 @@
 package user
 
 import (
-	"backend/src/router/types"
+	"backend/pkg/router/types"
 	"net/http"
 )
 

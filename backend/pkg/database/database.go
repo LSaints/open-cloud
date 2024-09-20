@@ -1,7 +1,7 @@
 package database
 
 import (
-	"backend/src/config"
+	config "backend/configs"
 	"database/sql"
 
 	_ "github.com/lib/pq"

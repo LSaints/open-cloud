@@ -1,8 +1,8 @@
 package user
 
 import (
-	"backend/src/database"
-	"backend/src/http/response"
+	"backend/pkg/database"
+	"backend/pkg/http/response"
 	"encoding/json"
 	"io"
 	"net/http"

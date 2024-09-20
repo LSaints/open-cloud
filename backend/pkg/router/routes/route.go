@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"backend/src/features/user"
+	"backend/internal/core/user"
 
 	"github.com/gorilla/mux"
 )
