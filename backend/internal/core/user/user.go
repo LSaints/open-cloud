@@ -1,6 +1,7 @@
 package user
 
 import (
+	"backend/pkg/security"
 	"errors"
 	"strings"
 	"time"
@@ -21,7 +22,9 @@ func (user *User) Init(isRegister bool) error {
 		return err
 	}
 
-	user.format()
+	if err := user.format(isRegister); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -35,15 +38,25 @@ func (user *User) validate(isRegister bool) error {
 	if err := checkmail.ValidateFormat(user.Email); err != nil {
 		return errors.New("the email is invalid")
 	}
-
 	if isRegister && user.Password == "" {
 		return errors.New("password field cannot be empty")
 	}
+
 	return nil
 }
 
-func (user *User) format() {
+func (user *User) format(isRegister bool) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
 	user.Password = strings.TrimSpace(user.Password)
+
+	if isRegister {
+		passwordHash, err := security.PasswordStringToHash(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = string(passwordHash)
+	}
+
+	return nil
 }
