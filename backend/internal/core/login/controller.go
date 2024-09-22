@@ -41,5 +41,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, _ := auth.GenerateToken(userInDatabase.ID)
-	w.Write([]byte("token: " + token))
+	w.Write([]byte(token))
 }
