@@ -1,9 +1,11 @@
 package user
 
 import (
+	auth "backend/pkg/Auth"
 	"backend/pkg/database"
 	"backend/pkg/http/response"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -96,6 +98,17 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	userID, err := strconv.ParseUint(param["id"], 10, 64)
 	if err != nil {
 		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	userIDFromToken, err := auth.GetUserIDFromToken(r)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userID != userIDFromToken {
+		response.Error(w, http.StatusForbidden, errors.New("it is not possible to change a user with a different ID"))
 		return
 	}
 
