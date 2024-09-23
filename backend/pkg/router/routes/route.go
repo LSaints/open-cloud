@@ -14,7 +14,7 @@ func Setup(router *mux.Router) *mux.Router {
 
 	for _, route := range routes {
 		if route.RequireAuthentication {
-			router.HandleFunc(route.URI, middlewares.Logger(middlewares.Authenticate(route.Action)))
+			router.HandleFunc(route.URI, middlewares.Authenticate(route.Action)).Methods(route.Method)
 		}
 		router.HandleFunc(route.URI, middlewares.Logger(route.Action)).Methods(route.Method)
 	}
