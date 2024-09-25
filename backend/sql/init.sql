@@ -8,3 +8,15 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );
 
+CREATE TABLE instances (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    ram BIGINT,
+    disk VARCHAR(255),
+    vcpus BIGINT,
+    osvariant VARCHAR(255),
+    console VARCHAR(255),
+    location VARCHAR(255),
+    extraargs TEXT
+);
+
