@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"backend/internal/core/instance"
 	"backend/internal/core/login"
 	"backend/internal/core/user"
 	"backend/pkg/middlewares"
@@ -11,6 +12,7 @@ import (
 func Setup(router *mux.Router) *mux.Router {
 	routes := user.UserRoutes
 	routes = append(routes, login.LoginRoutes)
+	routes = append(routes, instance.InstanceRoutes...)
 
 	for _, route := range routes {
 		if route.RequireAuthentication {
@@ -18,5 +20,6 @@ func Setup(router *mux.Router) *mux.Router {
 		}
 		router.HandleFunc(route.URI, middlewares.Logger(route.Action)).Methods(route.Method)
 	}
+
 	return router
 }
