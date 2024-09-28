@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS instances;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -17,6 +18,7 @@ CREATE TABLE instances (
     osvariant VARCHAR(255),
     console VARCHAR(255),
     location VARCHAR(255),
-    extraargs TEXT
+    extraargs TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
