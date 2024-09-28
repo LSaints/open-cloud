@@ -1,6 +1,9 @@
 package instance
 
 import (
+	instancemanager "backend/internal/features/instance-manager"
+	"backend/internal/templates/disk"
+	"backend/internal/templates/provision"
 	"backend/pkg/database"
 	"backend/pkg/http/response"
 	"encoding/json"
@@ -25,10 +28,22 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	diskTemplate := disk.QemuImg{}
+	diskCommnad, dir_output := diskTemplate.CreateDisk(instance.Name, 20)
+
+	manager := instancemanager.InstanceManager{}
+
+	if err := manager.CreateDiskFromTemplate(diskCommnad); err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	if err := instance.Init(); err != nil {
 		response.Error(w, http.StatusBadRequest, err)
 		return
 	}
+
+	instance.Disk = dir_output
 
 	db, err := database.Connect()
 	if err != nil {
@@ -42,7 +57,43 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
+
 	response.JSON(w, http.StatusCreated, instance)
+}
+
+func ExecuteProvision(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+
+	instanceID, err := strconv.ParseUint(param["id"], 10, 64)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := NewInstanceRepository(db)
+	instance, err := repository.GetByID(instanceID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	template := provision.VirtInstallTemplate{}
+	command := template.GenerateTemplate(instance.Name, instance.RAM, instance.Disk, instance.Vcpus, instance.OsVariant, instance.Console, instance.Location, instance.ExtraArgs)
+	manager := instancemanager.InstanceManager{}
+
+	if err := manager.ProvisionInstanceFromTemplate(command); err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, "Initializing Instance")
 }
 
 func GetAll(w http.ResponseWriter, r *http.Request) {
@@ -144,6 +195,21 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := NewInstanceRepository(db)
+	instance, err := repository.GetByID(instanceID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	manager := instancemanager.InstanceManager{}
+	template := provision.VirtInstallTemplate{}
+	command := template.DeleteInstanceFromTemplate(instance.Name)
+
+	if err := manager.DeleteFromTemplate(command); err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	if err = repository.Delete(instanceID); err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return

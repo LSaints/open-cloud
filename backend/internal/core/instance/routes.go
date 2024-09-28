@@ -13,6 +13,12 @@ var InstanceRoutes = []types.Route{
 		RequireAuthentication: true,
 	},
 	{
+		URI:                   "/instances/provision/{id}",
+		Method:                http.MethodPost,
+		Action:                ExecuteProvision,
+		RequireAuthentication: true,
+	},
+	{
 		URI:                   "/instances",
 		Method:                http.MethodGet,
 		Action:                GetAll,
