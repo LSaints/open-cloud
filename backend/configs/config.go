@@ -14,6 +14,7 @@ var (
 	Host             = ""
 	Port             = 0
 	SecretKey        = []byte("")
+	DiskDir          = ""
 )
 
 func Load() {
@@ -38,4 +39,5 @@ func Load() {
 	)
 	Host = os.Getenv("API_HOST")
 	SecretKey = []byte(os.Getenv("JWT_SECRET"))
+	DiskDir = os.Getenv("OPENCLOUD_LOCATION")
 }
