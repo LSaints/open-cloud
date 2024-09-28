@@ -217,3 +217,107 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	response.JSON(w, http.StatusNoContent, nil)
 }
+
+func HaltInstance(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	instanceID, err := strconv.ParseUint(param["id"], 10, 64)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := NewInstanceRepository(db)
+	instance, err := repository.GetByID(instanceID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	manager := instancemanager.InstanceManager{}
+	template := provision.VirtInstallTemplate{}
+	command := template.HaltInstance(instance.Name)
+
+	if err := manager.HaltInstanceFromTemplate(command); err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response.JSON(w, http.StatusNoContent, nil)
+}
+
+func GetStatusInstance(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	instanceID, err := strconv.ParseUint(param["id"], 10, 64)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := NewInstanceRepository(db)
+	instance, err := repository.GetByID(instanceID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	manager := instancemanager.InstanceManager{}
+	template := provision.VirtInstallTemplate{}
+	command := template.GetStatusInstance(instance.Name)
+
+	status, err := manager.GetStatusInstanceFromTemplate(command)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, status)
+}
+
+func StartInstance(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)
+	instanceID, err := strconv.ParseUint(param["id"], 10, 64)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := NewInstanceRepository(db)
+	instance, err := repository.GetByID(instanceID)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	manager := instancemanager.InstanceManager{}
+	template := provision.VirtInstallTemplate{}
+	command := template.StartInstance(instance.Name)
+
+	status, err := manager.StartInstanceFromTemplate(command)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, status)
+}

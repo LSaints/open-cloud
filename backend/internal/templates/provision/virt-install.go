@@ -38,3 +38,24 @@ func (vTemplate VirtInstallTemplate) DeleteInstanceFromTemplate(instanceName str
 	`, instanceName, instanceName, instanceName)
 	return template
 }
+
+func (vTemplate VirtInstallTemplate) HaltInstance(name string) string {
+	template := fmt.Sprintf(
+		`virsh destroy %s`, name,
+	)
+	return template
+}
+
+func (vTemplate VirtInstallTemplate) GetStatusInstance(name string) string {
+	template := fmt.Sprintf(
+		`virsh domstate %s`, name,
+	)
+	return template
+}
+
+func (VirtInstallTemplate) StartInstance(name string) string {
+	template := fmt.Sprintf(
+		`virsh start %s`, name,
+	)
+	return template
+}

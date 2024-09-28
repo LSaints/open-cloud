@@ -42,4 +42,22 @@ var InstanceRoutes = []types.Route{
 		Action:                Delete,
 		RequireAuthentication: true,
 	},
+	{
+		URI:                   "/instances/halt/{id}",
+		Method:                http.MethodPatch,
+		Action:                HaltInstance,
+		RequireAuthentication: true,
+	},
+	{
+		URI:                   "/instances/status/{id}",
+		Method:                http.MethodGet,
+		Action:                GetStatusInstance,
+		RequireAuthentication: true,
+	},
+	{
+		URI:                   "/instances/start/{id}",
+		Method:                http.MethodPatch,
+		Action:                StartInstance,
+		RequireAuthentication: true,
+	},
 }
